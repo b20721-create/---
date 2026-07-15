@@ -1,0 +1,321 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>오늘의 운세 뽑기 🎁</title>
+    <style>
+        body {
+            font-family: 'Noto Sans KR', sans-serif;
+            background: linear-gradient(135deg, #ffe5ec, #ffc2d1);
+            color: #4a4a4a;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            margin: 0;
+            overflow: hidden;
+        }
+
+        .container {
+            text-align: center;
+            background: rgba(255, 255, 255, 0.85);
+            padding: 50px 40px;
+            border-radius: 25px;
+            box-shadow: 0 10px 30px rgba(255, 143, 177, 0.25);
+            backdrop-filter: blur(10px);
+            border: 2px solid #fff;
+            max-width: 650px; 
+            width: 95%;
+            position: relative;
+        }
+
+        h1 {
+            font-size: 2.5rem;
+            margin-top: 0;
+            margin-bottom: 10px;
+            color: #ff5c8a;
+            text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.05);
+        }
+
+        p.subtitle {
+            color: #7a7a7a;
+            margin-bottom: 20px;
+            font-size: 1.05rem;
+            font-weight: bold;
+        }
+
+        .box-wrapper {
+            position: relative;
+            width: 100%;
+            height: 440px; 
+            margin: 0 auto;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .fortune-paper {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%; 
+            min-height: 260px; 
+            background: #fff;
+            border: 3px solid #ffb3c6;
+            border-radius: 16px;
+            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.1);
+            padding: 25px 40px; 
+            box-sizing: border-box;
+            z-index: 1;
+            opacity: 0;
+            transform: translateY(100px) scale(0.5);
+            transition: all 0.6s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .fortune-paper.reveal {
+            opacity: 1;
+            transform: translateY(0) scale(1.02);
+            z-index: 3;
+        }
+
+        /* 그래픽 선물 상자 스타일 */
+        .gift-box {
+            width: 180px;
+            height: 180px;
+            background: #ff758f;
+            position: absolute;
+            z-index: 2;
+            cursor: pointer;
+            border-radius: 15px;
+            box-shadow: 0 10px 20px rgba(255, 117, 143, 0.4);
+            transition: all 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            transform: translateY(40px);
+        }
+
+        .gift-box::before {
+            content: '';
+            position: absolute;
+            top: -15px;
+            left: -10px;
+            width: 200px;
+            height: 35px;
+            background: #ff5c8a;
+            border-radius: 8px;
+            box-shadow: 0 4px 5px rgba(0,0,0,0.1);
+        }
+
+        .gift-box::after {
+            content: '';
+            position: absolute;
+            top: -15px;
+            left: 75px;
+            width: 30px;
+            height: 195px;
+            background: #ffe5ec;
+        }
+
+        .ribbon-horiz {
+            position: absolute;
+            top: 70px;
+            left: 0;
+            width: 180px;
+            height: 30px;
+            background: #ffe5ec;
+            z-index: 3;
+        }
+
+        .ribbon-bow-l {
+            position: absolute;
+            top: -40px;
+            left: 45px;
+            width: 45px;
+            height: 30px;
+            border: 8px solid #ffe5ec;
+            border-radius: 50% 50% 0 50%;
+            transform: rotate(-20deg);
+            z-index: 4;
+        }
+
+        .ribbon-bow-r {
+            position: absolute;
+            top: -40px;
+            left: 90px;
+            width: 45px;
+            height: 30px;
+            border: 8px solid #ffe5ec;
+            border-radius: 50% 50% 50% 0;
+            transform: rotate(20deg);
+            z-index: 4;
+        }
+
+        .gift-box.shifted {
+            transform: translateY(160px) scale(0.6);
+        }
+
+        .gift-box:hover {
+            transform: translateY(40px) scale(1.05);
+        }
+
+        .gift-box.shifted:hover {
+            transform: translateY(160px) scale(0.65);
+        }
+
+        .gift-box.disabled {
+            cursor: not-allowed;
+        }
+
+        .shake {
+            animation: shake 0.5s ease-in-out infinite;
+        }
+
+        @keyframes shake {
+            0% { transform: translateY(40px) translate(1px, 1px) rotate(0deg); }
+            10% { transform: translateY(40px) translate(-1px, -2px) rotate(-2deg); }
+            20% { transform: translateY(40px) translate(-3px, 0px) rotate(2deg); }
+            30% { transform: translateY(40px) translate(0px, 2px) rotate(0deg); }
+            40% { transform: translateY(40px) translate(1px, -1px) rotate(1deg); }
+            55% { transform: translateY(40px) translate(-1px, 2px) rotate(-1deg); }
+            70% { transform: translateY(40px) translate(-3px, 1px) rotate(0deg); }
+            85% { transform: translateY(40px) translate(2px, 1px) rotate(-2deg); }
+            100% { transform: translateY(40px) translate(1px, -2px) rotate(-1deg); }
+        }
+
+        .luck-emoji {
+            font-size: 50px; 
+            margin-bottom: 12px;
+            line-height: 1;
+            white-space: nowrap; 
+            letter-spacing: 2px;
+        }
+
+        .luck-grade {
+            font-size: 1.6rem;
+            font-weight: bold;
+            color: #ff477e;
+            margin-bottom: 15px;
+            border-bottom: 2px dashed #ffccd5;
+            padding-bottom: 8px;
+            width: 100%;
+            white-space: nowrap;
+        }
+
+        .luck-text {
+            font-size: 1.25rem;
+            line-height: 1.6;
+            color: #333;
+            font-weight: bold;
+            word-break: keep-all;
+        }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <h1>💝 오늘의 운세</h1>
+    <p class="subtitle">🎁 정중앙의 분홍색 선물 상자를 눌러 운세를 뽑아보세요!</p>
+    
+    <div class="box-wrapper">
+        <div class="fortune-paper" id="fortunePaper">
+            <div class="luck-emoji" id="luckEmoji"></div>
+            <div class="luck-grade" id="luckGrade"></div>
+            <div class="luck-text" id="luckText"></div>
+        </div>
+        
+        <div class="gift-box" id="fortuneBox" onclick="drawFortune()">
+            <div class="ribbon-horiz"></div>
+            <div class="ribbon-bow-l"></div>
+            <div class="ribbon-bow-r"></div>
+        </div>
+    </div>
+</div>
+
+<script>
+    // 지정해주신 운세 데이터 및 확률
+    const fortunes = [
+        { 
+            grade: "행운의 날", 
+            emoji: "🍀", 
+            text: "오늘은 로또 사는날😁😁😁😁😁😁💕💕😍😏✨✨🎉🍀🍀",
+            weight: 5 
+        },
+        { 
+            grade: "좋은 날", 
+            emoji: "😊", 
+            text: "찍은 문제 다 맞는 날~😏😏🤞🤞😉🌈🌈",
+            weight: 15 
+        },
+        { 
+            grade: "평범", 
+            emoji: "😐", 
+            text: "그냥 그럼😁",
+            weight: 30 
+        },
+        { 
+            grade: "조금 나쁜 날", 
+            emoji: "😒", 
+            text: "넘어지지 않게 조심😂😂",
+            weight: 35 
+        },
+        { 
+            grade: "최악의 날", 
+            emoji: "💩😂💩", 
+            text: "💩💩💩",
+            weight: 15 
+        }
+    ];
+
+    const fortuneBox = document.getElementById('fortuneBox');
+    const fortunePaper = document.getElementById('fortunePaper');
+    const luckEmoji = document.getElementById('luckEmoji');
+    const luckGrade = document.getElementById('luckGrade');
+    const luckText = document.getElementById('luckText');
+    
+    let isDrawing = false; 
+
+    function getRandomFortune() {
+        const totalWeight = fortunes.reduce((sum, item) => sum + item.weight, 0);
+        let randomNum = Math.random() * totalWeight;
+        
+        for (let i = 0; i < fortunes.length; i++) {
+            if (randomNum < fortunes[i].weight) {
+                return fortunes[i];
+            }
+            randomNum -= fortunes[i].weight;
+        }
+    }
+
+    function drawFortune() {
+        if (isDrawing) return; 
+
+        isDrawing = true;
+        fortuneBox.classList.add('disabled');
+        fortunePaper.classList.remove('reveal');
+        fortuneBox.classList.remove('shifted'); 
+        
+        fortuneBox.classList.add('shake');
+
+        setTimeout(() => {
+            fortuneBox.classList.remove('shake');
+            
+            const todayFortune = getRandomFortune();
+
+            luckEmoji.textContent = todayFortune.emoji;
+            luckGrade.textContent = todayFortune.grade;
+            luckText.textContent = todayFortune.text;
+
+            fortuneBox.classList.add('shifted');
+            fortunePaper.classList.add('reveal');
+            
+            isDrawing = false;
+            fortuneBox.classList.remove('disabled');
+        }, 1000);
+    }
+</script>
+
+</body>
+</html>
